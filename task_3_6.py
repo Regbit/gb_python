@@ -14,4 +14,4 @@ for word in new_line.strip().split():
 	if res:
 		out.append(res)
 
-print(out)
+print(' '.join(out))
