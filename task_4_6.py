@@ -12,8 +12,6 @@ def parse_int(input_text="Enter a valid integer: "):
 	return input_num
 
 
-exit_count = False
-
 count_start = parse_int("Enter a valid integer to set start number: ")
 count_end = None
 
@@ -25,7 +23,7 @@ cycle_iter = cycle(["To be", "Not to be"])
 
 cnt = None
 
-while not cnt == count_end:
+while cnt != count_end:
 
 	cnt = next(count_iter)
 
