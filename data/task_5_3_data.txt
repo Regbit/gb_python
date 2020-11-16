@@ -1,0 +1,10 @@
+Smith 13500.45
+Johnson 73009.09
+Reed 40988.12
+Ferguson 69002.23
+Klein 42069.00
+Hamlin 13249.34
+Mason 39870.45
+Jefferson 7888.42
+Simpson 41238.03
+Thompson 18245.41
