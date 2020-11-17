@@ -9,12 +9,9 @@ try:
 			try:
 				employee_dict[line.split()[0]] = float(line.split()[1])
 			except ValueError:
-				print("Could not parse salary value!")
+				print(f'Could not parse salary value! Line = "{line[:-1]}"')
 
-		small_salary_list = []
-		for emp, sal in employee_dict.items():
-			if sal < 20000:
-				small_salary_list.append(emp)
+		small_salary_list = [emp for emp, sal in employee_dict.items() if sal < 20000]
 
 		avg_salary = sum(employee_dict.values()) / len(employee_dict)
 
