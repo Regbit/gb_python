@@ -1,14 +1,11 @@
 class Road:
 
-	_length = 0
-	_width = 0
+	def __init__(self, length_m=0, width_m=0):
+		self._length_m = length_m
+		self._width_m = width_m
 
-	def __init__(self, length=0, width=0):
-		self._length = length
-		self._width = width
-
-	def calc_asphalt_mass(self, height=1, mass_per_square_meter=25):
-		return self._length * self._width * height * mass_per_square_meter
+	def calc_asphalt_mass(self, height_sm=1, kg_per_square_meter_per_sm=25):
+		return self._length_m * self._width_m * height_sm * kg_per_square_meter_per_sm
 
 
 road_1 = Road(6500, 30)

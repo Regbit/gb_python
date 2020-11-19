@@ -1,10 +1,5 @@
 class Worker:
 
-	name = ''
-	surname = ''
-	position = ''
-	_income = {'wage': 0, 'bonus': 0}
-
 	def __init__(self, name, surname, position='', wage=0, bonus=0):
 		self.name = name
 		self.surname = surname
