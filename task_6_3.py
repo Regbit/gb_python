@@ -22,4 +22,4 @@ positions_list.append(Position('Andrei', 'Andreev', 'Manager', 115000, 32000))
 positions_list.append(Position('Sergei', 'Sergeev', 'Janitor', 55000, 10000))
 
 for pos in positions_list:
-	print(f"{pos.get_full_name()}: {pos.get_total_income()}")
+	print(f"{pos.get_full_name()}, {pos.position}: {pos.get_total_income()}")

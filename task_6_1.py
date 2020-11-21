@@ -24,7 +24,7 @@ traffic_light = TrafficLight(7, 2, 5)
 
 sec = 0
 while True:
-	print(f"{sec//60:02d}:{sec%60:02d} {traffic_light.running()}")
+	print(f"\r{sec//60:02d}:{sec%60:02d} {traffic_light.running()}", end='')
 	time.sleep(1)
 	sec += 1
 
