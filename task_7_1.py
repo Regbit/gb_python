@@ -43,15 +43,13 @@ class Matrix:
 
 def new_matrix(matrix_data):
 	print(f"Attempting to make matrix from data:{matrix_data}")
-	if matrix_data:
-		if type(matrix_data) == list:
-			if len(matrix_data[0]):
-				for row in matrix_data:
-					if len(row) != len(matrix_data[0]):
-						return "All rows must contain the same number of elements!" + \
-							   f"\nFirst row elements count: {len(matrix_data[0])}" + \
-							   f"\nThis row elements count: {len(row)}"
-				return Matrix(matrix_data)
+	if matrix_data and type(matrix_data) == list and len(matrix_data[0]):
+		for row in matrix_data:
+			if len(row) != len(matrix_data[0]):
+				return "All rows must contain the same number of elements!" + \
+					   f"\nFirst row elements count: {len(matrix_data[0])}" + \
+					   f"\nThis row elements count: {len(row)}"
+		return Matrix(matrix_data)
 
 	return f"Could not make matrix from input data!\nData: {matrix_data}"
 

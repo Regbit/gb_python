@@ -50,13 +50,13 @@ print(cell, end='\n\n')
 cell_1 = new_cell(13)
 cell_2 = new_cell(11)
 
-print(cell_1 + cell_2, end='\n\n')
-print(cell_1 - cell_2, end='\n\n')
-print(cell_2 - cell_1, end='\n\n')
+print(f"cell_1 + cell_2 = {cell_1 + cell_2}", end='\n\n')
+print(f"cell_1 - cell_2 = {cell_1 - cell_2}", end='\n\n')
+print(f"cell_2 - cell_1 = {cell_2 - cell_1}", end='\n\n')
 
-print(cell_1 * cell_2, end='\n\n')
-print(cell_1 // cell_2, end='\n\n')
-print(cell_2 // cell_1, end='\n\n')
+print(f"cell_1 * cell_2 = {cell_1 * cell_2}", end='\n\n')
+print(f"cell_1 // cell_2 = {cell_1 // cell_2}", end='\n\n')
+print(f"cell_2 // cell_1 = {cell_2 // cell_1}", end='\n\n')
 
 
 print(f"{cell_1} ordered by 3 in a row:\n{cell_1.make_order(3)}", end='\n\n')
