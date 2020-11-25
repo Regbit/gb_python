@@ -39,4 +39,3 @@ clothes_list.append(Suit("Gentlemen Suit", 1.78))
 
 for cl in clothes_list:
 	print(f'"{cl.name}" requires {cl.required_cloth}m2 of material.')
-

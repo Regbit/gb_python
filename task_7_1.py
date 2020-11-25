@@ -18,7 +18,7 @@ class Matrix:
 		out = ''
 
 		if self.matrix_data:
-			out = '\n'.join('|' + ' '.join([str(num) for num in row]) + '|' for row in self.matrix_data)
+			out = '\n'.join('|' + ' '.join(map(str, row)) + '|' for row in self.matrix_data)
 
 		return out
 
@@ -42,7 +42,7 @@ class Matrix:
 
 
 def new_matrix(matrix_data):
-	print(f"Attempting to make matrix from data:{matrix_data}")
+	print(f"Attempting to make matrix from data: {matrix_data}")
 	if matrix_data and type(matrix_data) == list and len(matrix_data[0]):
 		for row in matrix_data:
 			if len(row) != len(matrix_data[0]):
