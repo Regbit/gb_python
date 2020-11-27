@@ -246,6 +246,10 @@ class OfficeEquipment:
 		self.manufacture_year = kwargs.get('manufacture_year') or 2000
 
 	def __str__(self):
+		return f"{self.__class__.__name__}: {self.brand} {self.model}"
+
+	@property
+	def full_info(self):
 		return f"{self.__class__.__name__}: {self.brand} {self.model} - " \
 			   f"P:{self.paper_size}; Y:{self.manufacture_year}; V:{self.volume_l}"
 
@@ -256,8 +260,9 @@ class Printer(OfficeEquipment):
 		super().__init__(**kwargs)
 		self.printer_type = kwargs.get('printer_type') or 'N/A'
 
-	def __str__(self):
-		return f"{super().__str__()}; T:{self.printer_type}"
+	@property
+	def full_info(self):
+		return f"{super().full_info}; T:{self.printer_type}"
 
 
 class Scanner(OfficeEquipment):
@@ -266,8 +271,9 @@ class Scanner(OfficeEquipment):
 		super().__init__(**kwargs)
 		self.scanner_sensor_type = kwargs.get('scanner_sensor_type') or 'N/A'
 
-	def __str__(self):
-		return f"{super().__str__()}; T:{self.scanner_sensor_type}"
+	@property
+	def full_info(self):
+		return f"{super().full_info}; T:{self.scanner_sensor_type}"
 
 
 class Copier(OfficeEquipment):
@@ -276,8 +282,9 @@ class Copier(OfficeEquipment):
 		super().__init__(**kwargs)
 		self.copier_capacity = kwargs.get('copier_capacity') or 'N/A'
 
-	def __str__(self):
-		return f"{super().__str__()}; C:{self.copier_capacity}"
+	@property
+	def full_info(self):
+		return f"{super().full_info}; C:{self.copier_capacity}"
 
 
 class Warehouse:
@@ -301,7 +308,7 @@ class Warehouse:
 		pass
 
 
-w = Warehouse(100000)
+w = Warehouse(10000)
 w.store(Printer.make('9806-5'))
 w.store(Scanner.make('S30310'))
 w.store(Copier.make('5550CP'))
@@ -311,8 +318,8 @@ while True:
 
 	print("-" * 30)
 	print("Choose an option from the menu:\n")
-	print("1. Show current item list")
-	print("2. Add new item")
+	print("1. Show stored equipment list")
+	print("2. Store equipment")
 	print("3. Delete item by ID")
 	print("4. Show analytics")
 	print("\n0. Exit")
