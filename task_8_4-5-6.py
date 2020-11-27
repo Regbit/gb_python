@@ -322,8 +322,8 @@ while True:
 	if command == 1:
 		print("-" * 30)
 		print("Showing items in the list:")
-		for i in w.items:
-			print(i)
+		for i, eq in w.items:
+			print(i, eq)
 
 	elif command == 2:
 		print("-" * 30)
