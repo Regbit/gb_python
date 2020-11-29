@@ -511,7 +511,7 @@ while True:
 	print("3. Transfer items")
 	print("\n0. Exit")
 
-	command = input_check(accepted_values_range=[0, 4])
+	command = input_check(accepted_values_range=[0, 3])
 
 	if command == 1:
 		stored_equipment_menu()
