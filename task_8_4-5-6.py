@@ -1,8 +1,36 @@
+from random import randint
+
+
 class ModelNotFoundError(Exception):
 	pass
 
 
+class StorageOverflowError(Exception):
+	pass
+
+
+class NotEnoughEquipmentUnits(Exception):
+	pass
+
+
+class DepartmentNotFoundError(Exception):
+	pass
+
+
 class OfficeEquipment:
+
+	"""
+	OfficeEquipment
+	:param base_structure_dict: {parameter: (type, accepted_values_dict)}
+	"""
+
+	structure_dict = {
+		'equipment_type': ('printer', 'scanner' 'copier'),
+		'brand': ('',),
+		'volume_l': (0.01, 200.0),
+		'paper_size': ('A4', 'A3'),
+		'manufacture_year': (2000, 2020)
+	}
 
 	model_info_dict = {
 
@@ -238,6 +266,18 @@ class OfficeEquipment:
 		except ModelNotFoundError as err:
 			print(f"Can not make '{cls.__name__}':\n\t{err}")
 
+	@classmethod
+	def make_any(cls, model: str):
+		model_class = globals()[cls.model_info_dict[model].get('equipment_type').capitalize()]
+		try:
+			return model_class(**{'model': model, **cls.model_info(model, model_class.__name__.lower())})
+		except ModelNotFoundError as err:
+			print(f"Can not make '{model_class.__name__}':\n\t{err}")
+
+	@classmethod
+	def model_info_list(cls):
+		return [(model, info) for model, info in cls.model_info_dict.items()]
+
 	def __init__(self, **kwargs):
 		self.model = kwargs.get('model') or 'N/A'
 		self.brand = kwargs.get('brand') or 'N/A'
@@ -256,6 +296,9 @@ class OfficeEquipment:
 
 class Printer(OfficeEquipment):
 
+	structure_dict = OfficeEquipment.structure_dict.copy()
+	structure_dict['printer_type'] = ('Ink', 'Laser')
+
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.printer_type = kwargs.get('printer_type') or 'N/A'
@@ -266,6 +309,9 @@ class Printer(OfficeEquipment):
 
 
 class Scanner(OfficeEquipment):
+
+	structure_dict = OfficeEquipment.structure_dict.copy()
+	structure_dict['scanner_sensor_type'] = ('CMOS', 'CIS', 'CCD')
 
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -278,6 +324,9 @@ class Scanner(OfficeEquipment):
 
 class Copier(OfficeEquipment):
 
+	structure_dict = OfficeEquipment.structure_dict.copy()
+	structure_dict['copier_capacity'] = ('up to 500 sheets', 'up to 1000 sheets')
+
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.copier_capacity = kwargs.get('copier_capacity') or 'N/A'
@@ -287,89 +336,189 @@ class Copier(OfficeEquipment):
 		return f"{super().full_info}; C:{self.copier_capacity}"
 
 
+class Department:
+
+	equipment_list = []
+
+	def __init__(self, name: str):
+		self.name = name
+
+	def __str__(self):
+		return self.name
+
+
 class Warehouse:
 
 	next_id = 1
 
-	def __init__(self, capacity_l=0.0):
-		self.capacity_l = capacity_l
-		self.items = []
+	def __init__(self, capacity_m3=0.0):
+		self.capacity_m3 = capacity_m3
+		self.equipment_list = []
 
 	@property
-	def occupied_space(self):
-		return round(sum([eq[1].volume_l for eq in self.items]), 3)
+	def occupied_space_m3(self):
+		return round(sum([equipment[1].volume_l for equipment in self.equipment_list]) / 1000, 3)
 
-	def store(self, eq: OfficeEquipment):
-		if self.occupied_space + eq.volume_l <= self.capacity_l:
-			self.items.append((self.next_id, eq))
-			self.next_id += 1
+	@property
+	def count_by_model(self):
+		out = {}
+		for _, equipment in self.equipment_list:
+			if equipment.model not in out:
+				out[equipment.model] = 1
+			else:
+				out[equipment.model] += 1
 
-	def transfer(self):
-		pass
+		return out
+
+	def store(self, equipment_model: str, quantity=1):
+		if equipment_model not in OfficeEquipment.model_info_dict:
+			raise ModelNotFoundError
+
+		if self.occupied_space_m3 + OfficeEquipment.model_info_dict[equipment_model].get('volume_l') / 1000 * quantity <= self.capacity_m3:
+			for i in range(quantity):
+				self.equipment_list.append((self.next_id, OfficeEquipment.make_any(equipment_model)))
+				self.next_id += 1
+		else:
+			raise StorageOverflowError
+
+	def transfer(self, equipment_model: str, department: str, quantity=1):
+		if equipment_model not in OfficeEquipment.model_info_dict:
+			raise ModelNotFoundError
+		if department not in department_dict:
+			raise DepartmentNotFoundError
+
+		if self.count_by_model[equipment_model] >= quantity:
+			for _ in range(quantity):
+				for i in range(len(self.equipment_list)):
+					if self.equipment_list[i][1].model == equipment_model:
+						department_dict[department].equipment_list.append(self.equipment_list.pop(i))
+						break
+
+		else:
+			raise NotEnoughEquipmentUnits
+
+	def fill_random(self):
+		model_list = list(OfficeEquipment.model_info_dict.keys())
+		for i in range(randint(10, 18)):
+			self.store(model_list.pop(randint(0, len(model_list) - 1)), randint(15, 70))
 
 
-w = Warehouse(10000)
-w.store(Printer.make('9806-5'))
-w.store(Scanner.make('S30310'))
-w.store(Copier.make('5550CP'))
+def input_check(text='> ', input_type=int, accepted_values_range=None, accepted_values_dict=None):
+	while True:
+		try:
+			i = input_type(input(text))
+			if accepted_values_range and not (accepted_values_range[0] <= i <= accepted_values_range[1]):
+				raise ValueError
+			if accepted_values_dict and i not in accepted_values_dict:
+				raise ValueError
+			return i
+		except ValueError:
+			print("Enter a valid option!")
 
+
+def stored_equipment_menu():
+	print("-" * 30)
+	print("Equipment stored in warehouse:")
+	for model, qty in w.count_by_model.items():
+		info = OfficeEquipment.model_info_dict[model]
+		print(f"\u25b8{info.get('equipment_type').capitalize()} {info.get('brand')} {model}: {qty} unit{'s' if qty > 1 else ''}")
+
+	percent = round(w.occupied_space_m3 / w.capacity_m3 * 100)
+	print(f"\nOccupied space and capacity: {w.occupied_space_m3}/{w.capacity_m3}m3 = {percent}% filled")
+	print('\u25A0' * (percent // 5) + '\u25A1' * (20 - percent // 5))
+
+
+def new_model_menu():
+	pass
+
+
+def store_menu():
+	print("-" * 30)
+	print("Choose a model from the list to store:")
+	i = 1
+	for model, info in OfficeEquipment.model_info_list():
+		print(f"{i}: {info.get('equipment_type').capitalize()} {info.get('brand')} {model}")
+		i += 1
+
+	command = input_check(accepted_values_range=[1, i-1])
+	# TODO implement new_model_menu()
+	# if command == i:
+	# 	new_model_menu()
+
+	model = OfficeEquipment.model_info_list()[command - 1][0]
+	print("How much you wish to store?")
+	while True:
+		try:
+			w.store(model, input_check(accepted_values_range=[0, 1000]))
+			break
+		except ModelNotFoundError:
+			print(f"Can not store model '{model}' since it was not found in equipment dictionary")
+		except StorageOverflowError:
+			print(f"Not enough room to store {command} of {model}")
+
+
+def transfer_menu():
+	print("-" * 30)
+	print("Choose equipment to transfer:")
+	i = 1
+	for model, qty in w.count_by_model.items():
+		info = OfficeEquipment.model_info_dict[model]
+		print(f"{i}: {info.get('equipment_type').capitalize()} {info.get('brand')} {model}: {qty} unit{'s' if qty > 1 else ''}")
+		i += 1
+
+	command = input_check(accepted_values_range=[1, i-1])
+	model = list(w.count_by_model.keys())[command - 1]
+	try:
+		print("How much you wish to transfer?")
+		qty = input_check(accepted_values_range=[0, 1000])
+		print("And to which department?")
+		dep_list = list(department_dict.keys())
+		i = 1
+		for d in dep_list:
+			print(f"{i}: {d}")
+			i += 1
+		dep = dep_list[input_check(accepted_values_range=[1, len(department_dict)])]
+		w.transfer(model, dep, qty)
+	except ModelNotFoundError:
+		print(f"Can not find model '{model}' in warehouse!")
+	except DepartmentNotFoundError:
+		print(f"Department {dep} does not exist!")
+	except NotEnoughEquipmentUnits:
+		print(f"Can not transfer {qty} units of {model} to {dep} department since there's not enough units!")
+
+
+department_dict = {
+	'Sales': Department('Sales'),
+	'Marketing': Department('Marketing'),
+	'IT': Department('IT'),
+	'HR': Department('HR'),
+	'Accounting': Department('Accounting'),
+	'Maintenance': Department('Maintenance')
+}
+
+
+w = Warehouse(25)
+
+w.fill_random()
 
 while True:
 
 	print("-" * 30)
+	print("<<< SUPER WAREHOUSE v0.1 >>>")
 	print("Choose an option from the menu:\n")
 	print("1. Show stored equipment list")
 	print("2. Store equipment")
-	print("3. Delete item by ID")
-	print("4. Show analytics")
+	print("3. Transfer items")
 	print("\n0. Exit")
 
-	command = int(input(""))
+	command = input_check(accepted_values_range=[0, 4])
 
 	if command == 1:
-		print("-" * 30)
-		print("Showing items in the list:")
-		for i, eq in w.items:
-			print(i, eq)
-
+		stored_equipment_menu()
 	elif command == 2:
-		print("-" * 30)
-		# print("Enter item parameters one by one.\n")
-		# item_dict = dict()
-		#
-		# for param, type in item_structure_dict.items():
-		# 	param_value = input(f"{param}: ")
-		# 	# TODO parse more types
-		# 	if type == "int":
-		# 		item_dict[param] = int(param_value)
-		# 	elif type == "float":
-		# 		item_dict[param] = float(param_value)
-		# 	else:
-		# 		item_dict[param] = param_value
-		#
-		# item_list.append((next_id, item_dict))
-		# next_id += 1
-
+		store_menu()
 	elif command == 3:
-		print("-" * 30)
-		# print("Enter ID of item you wish to delete.\n")
-		# id = int(input("ID: "))
-		#
-		# for i in item_list:
-		# 	if i[0] == id:
-		# 		item_list.remove(i)
-
-	elif command == 4:
-		print("-" * 30)
-		# print("Showing analytics.\n")
-		# analytics_dict = dict()
-		# for param in item_structure_dict.keys():
-		# 	analytics_dict[param] = set()
-		# 	for item in item_list:
-		# 		analytics_dict[param].add(item[1][param])
-		#
-		# 	print(f"{param}: {analytics_dict[param]}")
-
+		transfer_menu()
 	elif command == 0:
 		print("-" * 30)
 		print("Exiting the program.")
