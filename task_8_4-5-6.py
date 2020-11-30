@@ -487,6 +487,16 @@ def transfer_menu():
 		print(f"Can not transfer {qty} units of {model} to {dep} department since there's not enough units!")
 
 
+def equipment_info_menu():
+	print("-" * 30)
+	print("Stored equipment info:")
+	i = 1
+	for model, _ in w.count_by_model.items():
+		info = OfficeEquipment.make_any(model).full_info
+		print(f"\u25b8{info}")
+		i += 1
+
+
 department_dict = {
 	'Sales': Department('Sales'),
 	'Marketing': Department('Marketing'),
@@ -509,9 +519,10 @@ while True:
 	print("1. Show stored equipment list")
 	print("2. Store equipment")
 	print("3. Transfer items")
+	print("4. Stored equipment info")
 	print("\n0. Exit")
 
-	command = input_check(accepted_values_range=[0, 3])
+	command = input_check(accepted_values_range=[0, 4])
 
 	if command == 1:
 		stored_equipment_menu()
@@ -519,6 +530,8 @@ while True:
 		store_menu()
 	elif command == 3:
 		transfer_menu()
+	elif command == 4:
+		equipment_info_menu()
 	elif command == 0:
 		print("-" * 30)
 		print("Exiting the program.")
