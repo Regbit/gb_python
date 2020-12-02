@@ -1,0 +1,6 @@
+Some data for tasks.
+This is necessary for testing.
+Data is crucial and is the most useful when handled right.
+Information is born from data.
+Knowledge is born from information.
+And wisdom is born from knowledge.
